@@ -24,9 +24,9 @@ fun main (args: Array<String>) {
 
 
 class SecurityLock {
-    private val mCurrentCode = ArrayList<Int>(4)
-    private var mCurrentRow: Int = 1
-    private var mCurrentCol: Int = 1
+    private val mCurrentCode = ArrayList<Char>(4)
+    private var mCurrentRow: Int = 2
+    private var mCurrentCol: Int = 0
 
     companion object {
         val UP = 0
@@ -35,17 +35,23 @@ class SecurityLock {
         val RIGHT = 3
 
         val sCodePad = arrayOf(
-                intArrayOf(1,2,3),
-                intArrayOf(4,5,6),
-                intArrayOf(7,8,9))
+                arrayOf(' ', ' ', '1', ' ', ' '),
+                arrayOf(' ', '2', '3', '4', ' '),
+                arrayOf('5', '6', '7', '8', '9'),
+                arrayOf(' ', 'A', 'B', 'C', ' '),
+                arrayOf(' ', ' ', 'D', ' ', ' '))
     }
 
     fun getCode(): String {
         return mCurrentCode.joinToString(separator = "")
     }
 
-    fun getCurrentDigit(): Int {
+    fun getCurrentDigit(): Char {
         return sCodePad[mCurrentRow][mCurrentCol]
+    }
+
+    fun getDigitAt(col: Int, row: Int): Char {
+        return sCodePad[row][col]
     }
 
     fun saveDigit() {
@@ -69,11 +75,21 @@ class SecurityLock {
     }
 
     private fun doMove(direction: Int) {
+        var dR = mCurrentRow
+        var dC = mCurrentCol
+
         when (direction) {
-            UP -> { if (--mCurrentRow < 0) mCurrentRow = 0 }
-            DOWN -> { if (++mCurrentRow > 2) mCurrentRow = 2 }
-            LEFT -> { if (--mCurrentCol < 0) mCurrentCol = 0 }
-            RIGHT -> { if (++mCurrentCol > 2) mCurrentCol = 2 }
+            UP -> dR--
+            DOWN -> dR++
+            LEFT -> dC--
+            RIGHT -> dC++
+        }
+
+        val range = IntRange(0, 4)
+
+        if (range.contains(dR) && range.contains(dC) && getDigitAt(dC, dR) != ' ') {
+            mCurrentRow = dR
+            mCurrentCol = dC
         }
     }
 }
