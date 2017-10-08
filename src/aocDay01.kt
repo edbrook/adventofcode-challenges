@@ -7,7 +7,7 @@ import java.nio.file.Paths
 fun main(args: Array<String>) {
     val path = Paths.get("").toAbsolutePath().toString()
 
-    val moves = File("$path/input.txt")
+    val moves = File("$path/input_day01.txt")
             .inputStream()
             .bufferedReader()
             .use { it.readLine().split(", ") }
