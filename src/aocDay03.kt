@@ -40,8 +40,7 @@ fun countValidTriangles(filename: String): Int {
 fun processTriangles(triangles: Array<IntArray>): Int {
     var possible = 0
     triangles.forEach {
-        val (a, b, c) = it
-        if (isPossibleTriangle(a, b, c)) {
+        if (isPossibleTriangle(it)) {
             possible++
         }
     }
@@ -55,7 +54,7 @@ fun parseLine(line: String): IntArray {
             .toIntArray()
 }
 
-fun isPossibleTriangle(a: Int, b: Int, c: Int): Boolean {
-    val (x, y, z) = intArrayOf(a, b, c).sorted()
+fun isPossibleTriangle(triangle: IntArray): Boolean {
+    val (x, y, z) = triangle.sorted()
     return x + y > z
 }
