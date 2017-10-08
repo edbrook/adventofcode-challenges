@@ -6,29 +6,56 @@ fun main(args: Array<String>) {
             .toAbsolutePath()
             .toString()
 
+    val possible = countValidTriangles("$root/input_day03.txt")
+
+    println("Possible: $possible")
+}
+
+fun countValidTriangles(filename: String): Int {
     var possible = 0
 
-    File("$root/input_day03.txt")
+    val triangles = arrayOf(
+            IntArray(3),
+            IntArray(3),
+            IntArray(3))
+
+    var side = 0
+    File(filename)
             .inputStream()
             .bufferedReader()
             .forEachLine {
-                val (a, b, c) = parseLine(it)
-                if (isPossibleTriangle(a, b, c)) {
-                    possible++
+                side++
+                side %= 3
+                parseLine(it).forEachIndexed {
+                    triangle, sideLength -> triangles[triangle][side] = sideLength
+                }
+                if (side == 0) {
+                    possible += processTriangles(triangles)
                 }
             }
 
-    println("Possible: $possible")
+    return possible
+}
+
+fun processTriangles(triangles: Array<IntArray>): Int {
+    var possible = 0
+    triangles.forEach {
+        val (a, b, c) = it
+        if (isPossibleTriangle(a, b, c)) {
+            possible++
+        }
+    }
+    return possible
 }
 
 fun parseLine(line: String): IntArray {
     return line.trim()
             .split(Regex("\\s+"))
             .map { it.toInt() }
-            .sorted()
             .toIntArray()
 }
 
 fun isPossibleTriangle(a: Int, b: Int, c: Int): Boolean {
-    return a + b > c
+    val (x, y, z) = intArrayOf(a, b, c).sorted()
+    return x + y > z
 }
