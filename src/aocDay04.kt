@@ -14,29 +14,39 @@ fun main(args: Array<String>) {
                 val room = Room.fromEncryptedString(it)
                 if (RoomValidator.validate(room)) {
                     validCount++
-                    sumRoomId += room.id
+                    sumRoomId += room.sectorId
+                    println("${room.sectorId} -- ${room.getDecryptedName()}")
                 }
             }
     println("\nTotal Valid: $validCount")
     println("Sum of Room Ids: $sumRoomId")
 }
 
-class Room private constructor(val id: Int, val name: String, val csum: String) {
+class Room private constructor(val sectorId: Int, val name: String, val csum: String) {
     companion object {
-        fun fromEncryptedString(name: String): Room {
-            val idStart = name.lastIndexOf('-') + 1
-            val csStart = name.indexOf('[', idStart) + 1
-            val room = name.substring(0, idStart-1).replace("-", "")
-            val id = name.substring(idStart, csStart-1).toInt()
-            val csum = name.substring(csStart, name.lastIndex)
+        fun fromEncryptedString(encRoomData: String): Room {
+            val idStart = encRoomData.lastIndexOf('-') + 1
+            val csStart = encRoomData.indexOf('[', idStart) + 1
+            val room = encRoomData.substring(0, idStart-1)
+            val id = encRoomData.substring(idStart, csStart-1).toInt()
+            val csum = encRoomData.substring(csStart, encRoomData.lastIndex)
             return Room(id, room, csum)
         }
+    }
+
+    fun getDecryptedName(): String {
+        return name.map {
+            if (it == '-')
+                ' '
+            else
+                ((it.toInt() + (sectorId % 26)) % 97 % 26 + 97).toChar()
+        }.joinToString("")
     }
 }
 
 object RoomValidator {
     fun validate(room: Room): Boolean {
-        val letterCounts = countLetters(room.name)
+        val letterCounts = countLetters(room.name.replace("-", ""))
         val letters = getSortedLetters(letterCounts).sliceArray(IntRange(0, 4))
         val mySum = letters.joinToString("")
         return mySum == room.csum
