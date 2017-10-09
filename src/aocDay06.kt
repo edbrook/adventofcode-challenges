@@ -38,15 +38,15 @@ class RepetitionCode {
         val message = Array(data.size, { ' ' })
         data.forEachIndexed {
             index, letterCounts ->
-                var maxCount = 0
-                var maxChar = ' '
+                var count = -1
+                var curChar = ' '
                 letterCounts.forEach {
-                    if (it.value > maxCount) {
-                        maxChar = it.key
-                        maxCount = it.value
+                    if (count == -1 || it.value < count) {
+                        curChar = it.key
+                        count = it.value
                     }
                 }
-                message[index] = maxChar
+                message[index] = curChar
         }
         return message.joinToString("")
     }
