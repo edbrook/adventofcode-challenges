@@ -19,11 +19,18 @@ object DoorPassword {
 
     fun decode(doorId: String): String {
         var id = 0
-        val passwd = ArrayList<Char>()
-        while (passwd.size < 8) {
+        var done = 0
+        val arrRange = IntRange(0, 7)
+        val passwd = Array(8, { ' ' })
+        while (done < 8) {
             val nextHash = hash("$doorId$id")
             if (nextHash.substring(0, 5) == "00000") {
-                passwd.add(nextHash[5])
+                val pos = nextHash[5].toInt() - 48
+                val chr = nextHash[6]
+                if (arrRange.contains(pos) && passwd[pos] == ' ') {
+                    passwd[pos] = chr
+                    done++
+                }
             }
             id++
         }
